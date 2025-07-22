@@ -13,37 +13,22 @@ const books = [
   { id: 4, title: 'Animal Farm', author: 'George Orwell', genre: 'Fiction', publicationDate: '1945-08-17' },
 ];
 
-// Helper function for sorting
-function sortBooks(data, sort_by, order) {
-  return data.sort((a, b) => {
-    let fieldA = a[sort_by];
-    let fieldB = b[sort_by];
-
-    // Case-insensitive string comparison for title and author and genre
-    if (typeof fieldA === 'string') fieldA = fieldA.toLowerCase();
-    if (typeof fieldB === 'string') fieldB = fieldB.toLowerCase();
-
-    if (fieldA < fieldB) return order === 'asc' ? -1 : 1;
-    if (fieldA > fieldB) return order === 'asc' ? 1 : -1;
-    return 0;
-  });
-}
-
 // Search route with filtering, pagination, sorting
 app.get('/api/books', (req, res) => {
-  let { title, author, genre, page = 1, page_size = 10, sort_by = 'title', order = 'asc' } = req.query;
+  // FIXED: Changed to camelCase parameters to match frontend
+  let { title, author, genre, page = 1, pageSize = 10, sortBy = 'title', sortOrder = 'asc' } = req.query;
 
   page = parseInt(page);
-  page_size = parseInt(page_size);
+  pageSize = parseInt(pageSize);
 
   if (isNaN(page) || page < 1) page = 1;
-  if (isNaN(page_size) || page_size < 1) page_size = 10;
-  if (page_size > 100) page_size = 100;
+  if (isNaN(pageSize) || pageSize < 1) pageSize = 10;
+  if (pageSize > 100) pageSize = 100;
 
   // Allowed sort fields and order
   const validSortFields = ['title', 'author', 'publicationDate', 'genre'];
-  if (!validSortFields.includes(sort_by)) sort_by = 'title';
-  if (!['asc', 'desc'].includes(order)) order = 'asc';
+  if (!validSortFields.includes(sortBy)) sortBy = 'title';
+  if (!['asc', 'desc'].includes(sortOrder)) sortOrder = 'asc';
 
   // Filter books
   let filteredBooks = books.filter((book) => {
@@ -54,19 +39,36 @@ app.get('/api/books', (req, res) => {
     );
   });
 
-  // Sort books
-  filteredBooks = sortBooks(filteredBooks, sort_by, order);
+  // FIXED: Improved sorting function
+  filteredBooks.sort((a, b) => {
+    let fieldA = a[sortBy];
+    let fieldB = b[sortBy];
+
+    // Handle dates properly
+    if (sortBy === 'publicationDate') {
+      fieldA = new Date(fieldA);
+      fieldB = new Date(fieldB);
+    } else if (typeof fieldA === 'string') {
+      fieldA = fieldA.toLowerCase();
+      fieldB = fieldB.toLowerCase();
+    }
+
+    if (fieldA < fieldB) return sortOrder === 'asc' ? -1 : 1;
+    if (fieldA > fieldB) return sortOrder === 'asc' ? 1 : -1;
+    return 0;
+  });
 
   // Pagination slice
   const total = filteredBooks.length;
-  const startIndex = (page - 1) * page_size;
-  const endIndex = startIndex + page_size;
+  const startIndex = (page - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
   const paginatedBooks = filteredBooks.slice(startIndex, endIndex);
 
+  // FIXED: Changed response to match frontend expectations
   res.json({
     total,
     page,
-    page_size,
+    pageSize,  // Changed from page_size to pageSize
     books: paginatedBooks,
   });
 });
