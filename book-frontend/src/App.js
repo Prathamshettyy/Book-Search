@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+// Move API_BASE_URL outside the component - this is the key fix!
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 function App() {
   const [filters, setFilters] = useState({ title: '', author: '', genre: '' });
   const [pagination, setPagination] = useState({ page: 1, pageSize: 10, total: 0 });
@@ -8,9 +11,6 @@ function App() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
-  const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -43,8 +43,9 @@ function App() {
       }
     };
     fetchBooks();
-  }, [filters, pagination.page, pagination.pageSize, sort]);
+  }, [filters, pagination.page, pagination.pageSize, sort]); // No need to add API_BASE_URL now!
 
+  // ... rest of your component code remains exactly the same ...
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters(prev => ({ ...prev, [name]: value }));
@@ -164,32 +165,46 @@ function App() {
 
       {/* Pagination Controls */}
       {totalPages > 1 && (
-        <div style={{ marginTop: 20 }}>
+        <div style={{ marginTop: 20, display: 'flex', alignItems: 'center' }}>
           <button
             onClick={() => goToPage(pagination.page - 1)}
             disabled={pagination.page <= 1}
-            style={{ marginRight: 10, padding: '6px 12px' }}
+            style={{
+              marginRight: 10,
+              padding: '6px 12px',
+              cursor: pagination.page <= 1 ? 'not-allowed' : 'pointer',
+            }}
           >
             Prev
           </button>
-          <span>Page {pagination.page} of {totalPages}</span>
+
+          <span style={{ fontWeight: 'bold' }}>
+            Page {pagination.page} of {totalPages}
+          </span>
+
           <button
             onClick={() => goToPage(pagination.page + 1)}
             disabled={pagination.page >= totalPages}
-            style={{ marginLeft: 10, padding: '6px 12px' }}
+            style={{
+              marginLeft: 10,
+              padding: '6px 12px',
+              cursor: pagination.page >= totalPages ? 'not-allowed' : 'pointer',
+            }}
           >
             Next
           </button>
 
-          <label style={{ marginLeft: 20 }}>
+          <label style={{ marginLeft: 20, display: 'flex', alignItems: 'center' }}>
             Results per page:
             <select
               value={pagination.pageSize}
               onChange={handlePageSizeChange}
-              style={{ marginLeft: 5, padding: '4px' }}
+              style={{ marginLeft: 8, padding: '4px 8px' }}
             >
               {[2, 5, 10, 20, 50].map(size => (
-                <option key={size} value={size}>{size}</option>
+                <option key={size} value={size}>
+                  {size}
+                </option>
               ))}
             </select>
           </label>
