@@ -187,7 +187,7 @@ function App() {
               onChange={handlePageSizeChange}
               style={{ marginLeft: 5, padding: '4px' }}
             >
-              {[5, 10, 20, 50].map(size => (
+              {[2, 5, 10, 20, 50].map(size => (
                 <option key={size} value={size}>{size}</option>
               ))}
             </select>
