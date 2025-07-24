@@ -4,8 +4,23 @@ const app = express();
 const PORT = 5000;
 
 const corsOptions = {
-  origin: 'http://localhost:3000',
-  optionsSuccessStatus: 200 // For legacy browser support
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'https://book-searchdev.netlify.app'
+    ];
+    
+    // Allow requests with no origin (mobile apps, etc.)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
 
