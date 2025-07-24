@@ -1,51 +1,98 @@
-import React, { useState, useEffect } from 'react';
+// App.js
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import {
+  Container,
+  TextField,
+  Button,
+  Grid,
+  Card,
+  Typography,
+  AppBar,
+  Toolbar,
+  CircularProgress,
+  Box,
+  Alert,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Paper,
+  Pagination,
+  ThemeProvider,
+  createTheme,
+  CssBaseline,
+  Stack,
+  Tooltip
+} from '@mui/material';
+import { keyframes } from '@emotion/react';
 
-// Move API_BASE_URL outside the component - this is the key fix!
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+    primary: {
+      main: '#bb86fc',
+    },
+    background: {
+      default: '#121212',
+      paper: '#1e1e1e',
+    },
+    text: {
+      primary: '#ffffff',
+      secondary: '#b0bec5',
+    }
+  },
+  typography: {
+    fontFamily: 'Roboto, Arial, sans-serif',
+    h6: {
+      fontWeight: 500,
+    }
+  },
+});
+
+const glowPulse = keyframes`
+  0% { box-shadow: 0 0 10px 2px rgba(187,134,252, 0.3); }
+  50% { box-shadow: 0 0 20px 6px rgba(187,134,252, 0.6); }
+  100% { box-shadow: 0 0 10px 2px rgba(187,134,252, 0.3); }
+`;
+
+const API_BASE_URL = 'http://localhost:5000';
 
 function App() {
   const [filters, setFilters] = useState({ title: '', author: '', genre: '' });
-  const [pagination, setPagination] = useState({ page: 1, pageSize: 10, total: 0 });
   const [sort, setSort] = useState({ sortBy: 'title', sortOrder: 'asc' });
+  const [pagination, setPagination] = useState({ page: 1, pageSize: 8, total: 0 });
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const fetchBooks = useCallback(async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const params = {
+        ...filters,
+        page: pagination.page,
+        pageSize: pagination.pageSize,
+        sortBy: sort.sortBy,
+        sortOrder: sort.sortOrder,
+      };
+      Object.keys(params).forEach(key => (params[key] === '' || params[key] === null) && delete params[key]);
+      const response = await axios.get(`${API_BASE_URL}/api/books`, { params });
+      setBooks(response.data.books || []);
+      setPagination(prev => ({ ...prev, total: response.data.total || 0 }));
+    } catch (err) {
+      setError('Failed to fetch books. Please ensure the backend server is running.');
+      setBooks([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [filters, pagination.page, pagination.pageSize, sort]);
+
   useEffect(() => {
-    const fetchBooks = async () => {
-      setLoading(true);
-      setError('');
-      try {
-        const params = {
-          ...filters,
-          page: pagination.page,
-          pageSize: pagination.pageSize,
-          sortBy: sort.sortBy,
-          sortOrder: sort.sortOrder
-        };
-
-        // Remove empty filter values
-        Object.keys(params).forEach(key => {
-          if (params[key] === '') {
-            delete params[key];
-          }
-        });
-
-        const response = await axios.get(`${API_BASE_URL}/api/books`, { params });
-        setBooks(response.data.books || []);
-        setPagination(prev => ({ ...prev, total: response.data.total || 0 }));
-      } catch (err) {
-        setError('Failed to fetch books. Please try again.');
-        setBooks([]);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchBooks();
-  }, [filters, pagination.page, pagination.pageSize, sort]); // No need to add API_BASE_URL now!
+  }, [fetchBooks]);
 
-  // ... rest of your component code remains exactly the same ...
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters(prev => ({ ...prev, [name]: value }));
@@ -53,8 +100,16 @@ function App() {
   };
 
   const handleSortChange = (e) => {
-    const { name, value } = e.target;
-    setSort(prev => ({ ...prev, [name]: value }));
+    setSort(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handlePageChange = (event, newPage) => {
+    setPagination(prev => ({ ...prev, page: newPage }));
+  };
+
+  const handlePageSizeChange = (e) => {
+    const newSize = parseInt(e.target.value, 10);
+    setPagination(prev => ({ ...prev, pageSize: newSize, page: 1 }));
   };
 
   const goToPage = (newPage) => {
@@ -64,13 +119,9 @@ function App() {
     }
   };
 
-  const handlePageSizeChange = (e) => {
-    const newSize = parseInt(e.target.value);
-    setPagination(prev => ({ ...prev, pageSize: newSize, page: 1 }));
-  };
-
   const clearFilters = () => {
     setFilters({ title: '', author: '', genre: '' });
+    setSort({ sortBy: 'title', sortOrder: 'asc' });
     setPagination(prev => ({ ...prev, page: 1 }));
   };
 
@@ -79,138 +130,174 @@ function App() {
   const endResult = Math.min(pagination.page * pagination.pageSize, pagination.total);
 
   return (
-    <div style={{ maxWidth: 700, margin: 'auto', padding: 20, fontFamily: 'Arial' }}>
-      <h1>Book Search Application</h1>
-
-      {/* Filter Inputs */}
-      <div style={{ marginBottom: 20 }}>
-        <input
-          type="text"
-          name="title"
-          placeholder="Search by title"
-          value={filters.title}
-          onChange={handleFilterChange}
-          style={{ marginRight: 10, padding: '8px', width: '30%' }}
-        />
-        <input
-          type="text"
-          name="author"
-          placeholder="Search by author"
-          value={filters.author}
-          onChange={handleFilterChange}
-          style={{ marginRight: 10, padding: '8px', width: '30%' }}
-        />
-        <input
-          type="text"
-          name="genre"
-          placeholder="Search by genre"
-          value={filters.genre}
-          onChange={handleFilterChange}
-          style={{ padding: '8px', width: '30%' }}
-        />
-        <button onClick={clearFilters} style={{ marginLeft: 10, padding: '8px 12px' }}>Clear Filters</button>
-      </div>
-
-      {/* Sorting */}
-      <div style={{ marginBottom: 20 }}>
-        <label>
-          Sort by:
-          <select
-            name="sortBy"
-            value={sort.sortBy}
-            onChange={handleSortChange}
-            style={{ marginLeft: 5, marginRight: 20, padding: '6px' }}
-          >
-            <option value="title">Title</option>
-            <option value="author">Author</option>
-            <option value="genre">Genre</option>
-            <option value="publicationDate">Publication Date</option>
-          </select>
-        </label>
-        <label>
-          Order:
-          <select
-            name="sortOrder"
-            value={sort.sortOrder}
-            onChange={handleSortChange}
-            style={{ marginLeft: 5, padding: '6px' }}
-          >
-            <option value="asc">Ascending</option>
-            <option value="desc">Descending</option>
-          </select>
-        </label>
-      </div>
-
-      {/* Result Info */}
-      <div style={{ marginBottom: 20 }}>
-        {pagination.total > 0 && <div>Showing {startResult} - {endResult} of {pagination.total} results</div>}
-      </div>
-
-      {/* Loading and Error */}
-      {loading && <div>Loading books...</div>}
-      {error && <div style={{ color: 'red' }}>{error}</div>}
-
-      {/* Book List */}
-      <ul style={{ listStyle: 'none', padding: 0 }}>
-        {!loading && books.length === 0 && <li>No books found.</li>}
-        {books.map(book => (
-          <li key={book.id} style={{ marginBottom: 15, borderBottom: '1px solid #ccc', paddingBottom: 10 }}>
-            <strong>{book.title}</strong><br />
-            <em>{book.author}</em><br />
-            Genre: {book.genre}<br />
-            Published: {book.publicationDate ? new Date(book.publicationDate).toLocaleDateString() : 'N/A'}
-          </li>
-        ))}
-      </ul>
-
-      {/* Pagination Controls */}
-      {totalPages > 1 && (
-        <div style={{ marginTop: 20, display: 'flex', alignItems: 'center' }}>
-          <button
-            onClick={() => goToPage(pagination.page - 1)}
-            disabled={pagination.page <= 1}
-            style={{
-              marginRight: 10,
-              padding: '6px 12px',
-              cursor: pagination.page <= 1 ? 'not-allowed' : 'pointer',
-            }}
-          >
-            Prev
-          </button>
-
-          <span style={{ fontWeight: 'bold' }}>
-            Page {pagination.page} of {totalPages}
-          </span>
-
-          <button
-            onClick={() => goToPage(pagination.page + 1)}
-            disabled={pagination.page >= totalPages}
-            style={{
-              marginLeft: 10,
-              padding: '6px 12px',
-              cursor: pagination.page >= totalPages ? 'not-allowed' : 'pointer',
-            }}
-          >
-            Next
-          </button>
-
-          <label style={{ marginLeft: 20, display: 'flex', alignItems: 'center' }}>
-            Results per page:
-            <select
-              value={pagination.pageSize}
-              onChange={handlePageSizeChange}
-              style={{ marginLeft: 8, padding: '4px 8px' }}
+    <ThemeProvider theme={darkTheme}>
+      <CssBaseline />
+      <Box sx={{ minHeight: '100vh', background: 'linear-gradient(135deg, #070707ff, #121212)' }}>
+        <AppBar
+          position="static"
+          elevation={0}
+          sx={{
+            backgroundColor: '#060606ff',
+            animation: `${glowPulse} 3s ease-in-out infinite`,
+            borderBottom: '1px solid #333',
+          }}
+        >
+          <Toolbar sx={{ justifyContent: 'center' }}>
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{ fontWeight: 'bold', color: 'primary.main', fontSize: '1.5rem' }}
             >
-              {[2, 5, 10, 20, 50].map(size => (
-                <option key={size} value={size}>
-                  {size}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-      )}
-    </div>
+              Book Search
+            </Typography>
+          </Toolbar>
+        </AppBar>
+
+        <Container sx={{ py: { xs: 2, sm: 4 }, px: { xs: 2, sm: 4 } }}>
+          <Paper elevation={0} sx={{ p: 3, mb: 4, borderRadius: 4, background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.1)' }}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} sm={6} md={3}><TextField fullWidth label="Title" name="title" value={filters.title} onChange={handleFilterChange} variant="outlined" size="small" sx={{ borderRadius: 2 }} /></Grid>
+              <Grid item xs={12} sm={6} md={3}><TextField fullWidth label="Author" name="author" value={filters.author} onChange={handleFilterChange} variant="outlined" size="small" sx={{ borderRadius: 2 }} /></Grid>
+              <Grid item xs={12} sm={6} md={3}><TextField fullWidth label="Genre" name="genre" value={filters.genre} onChange={handleFilterChange} variant="outlined" size="small" sx={{ borderRadius: 2 }} /></Grid>
+              <Grid item xs={12} sm={6} md={3}><Button fullWidth variant="outlined" onClick={clearFilters} sx={{ borderRadius: 2, textTransform: 'none' }}>Clear Filters</Button></Grid>
+            </Grid>
+            <Grid container spacing={2} alignItems="center" sx={{ mt: 1 }}>
+              <Grid item xs={6}>
+                <FormControl fullWidth size="small">
+                  <InputLabel>Sort By</InputLabel>
+                  <Select value={sort.sortBy} label="Sort By" name="sortBy" onChange={handleSortChange} sx={{ borderRadius: 2 }}>
+                    <MenuItem value="title">Title</MenuItem>
+                    <MenuItem value="author">Author</MenuItem>
+                    <MenuItem value="genre">Genre</MenuItem>
+                    <MenuItem value="publicationDate">Date</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <FormControl fullWidth size="small">
+                  <InputLabel>Order</InputLabel>
+                  <Select value={sort.sortOrder} label="Order" name="sortOrder" onChange={handleSortChange} sx={{ borderRadius: 2 }}>
+                    <MenuItem value="asc">Ascending</MenuItem>
+                    <MenuItem value="desc">Descending</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
+          </Paper>
+
+          <Box sx={{ mb: 2, textAlign: 'center' }}>
+            {pagination.total > 0 && !loading && (
+              <Typography variant="body2" color="text.secondary">
+                Showing {startResult} - {endResult} of {pagination.total} results
+              </Typography>
+            )}
+          </Box>
+
+          {loading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}><CircularProgress color="primary" /></Box>
+          ) : error ? (
+            <Alert severity="error" variant="filled">{error}</Alert>
+          ) : (
+            <>
+              <Grid container spacing={3} justifyContent="center">
+                {books.length > 0 ? books.map((book) => (
+                  <Grid item key={book.id}>
+                    <Box sx={{ width: 240, height: 140 }}>
+                      <Card
+                        sx={{
+                          width: '100%',
+                          height: '100%',
+                          backdropFilter: 'blur(6px)',
+                          backgroundColor: 'rgba(30, 30, 30, 0.7)',
+                          border: '1px solid rgba(255, 255, 255, 0.1)',
+                          boxShadow: '0 8px 20px -8px rgba(187, 134, 252, 0.4)',
+                          borderRadius: 4,
+                          p: 2,
+                          transition: 'all 0.3s ease-in-out',
+                          '&:hover': {
+                            transform: 'translateY(-6px)',
+                            boxShadow: '0 12px 30px -8px rgba(187, 134, 252, 0.6)'
+                          }
+                        }}
+                      >
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                          <Tooltip title={book.title} arrow placement="top">
+                            <Typography
+                              variant="h6"
+                              component="div"
+                              sx={{
+                                fontWeight: 600,
+                                fontSize: '1rem',
+                                color: 'primary.main',
+                                lineHeight: 1.3,
+                                overflow: 'hidden',
+                                display: '-webkit-box',
+                                WebkitBoxOrient: 'vertical',
+                                WebkitLineClamp: 2,
+                                cursor: 'default',
+                                transition: 'all 0.2s ease-in-out',
+                                '&:hover': {
+                                  textDecoration: 'underline',
+                                  color: 'primary.light'
+                                }
+                              }}
+                            >
+                              {book.title}
+                            </Typography>
+                          </Tooltip>
+                          <Typography variant="body2" color="text.secondary"><strong>Author:</strong> {book.author}</Typography>
+                          <Typography variant="body2" color="text.secondary"><strong>Genre:</strong> {book.genre}</Typography>
+                          <Typography variant="body2" color="text.secondary"><strong>Published:</strong> {new Date(book.publicationDate).toLocaleDateString()}</Typography>
+                        </Box>
+                      </Card>
+                    </Box>
+                  </Grid>
+                )) : (
+                  <Grid item xs={12}>
+                    <Paper elevation={4} sx={{ p: 4, width: '100%', textAlign: 'center', borderRadius: 3 }}>
+                      <Typography>No books found for the selected criteria.</Typography>
+                    </Paper>
+                  </Grid>
+                )}
+              </Grid>
+
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 4, gap: 2 }}>
+                {totalPages > 1 && (
+                  <Pagination
+                    count={totalPages}
+                    page={pagination.page}
+                    onChange={handlePageChange}
+                    color="primary"
+                    sx={{
+                      '& .MuiPaginationItem-root': {
+                        borderRadius: '50%',
+                        color: 'primary.main',
+                      },
+                      '& .Mui-selected': {
+                        backgroundColor: 'primary.main',
+                        color: '#000',
+                      }
+                    }}
+                  />
+                )}
+                <Stack direction="row" spacing={2} alignItems="center">
+                  <Button variant="outlined" onClick={() => goToPage(pagination.page - 1)} disabled={pagination.page <= 1}>Prev</Button>
+                  <FormControl size="small" sx={{ minWidth: 120 }}>
+                    <InputLabel>Per Page</InputLabel>
+                    <Select value={pagination.pageSize} label="Per Page" onChange={handlePageSizeChange}>
+                      {[8, 12, 20, 50].map(size => (
+                        <MenuItem key={size} value={size}>{size}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  <Button variant="outlined" onClick={() => goToPage(pagination.page + 1)} disabled={pagination.page >= totalPages}>Next</Button>
+                </Stack>
+              </Box>
+            </>
+          )}
+        </Container>
+      </Box>
+    </ThemeProvider>
   );
 }
 

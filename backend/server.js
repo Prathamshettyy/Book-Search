@@ -3,7 +3,11 @@ const cors = require('cors');
 const app = express();
 const PORT = 5000;
 
-app.use(cors());
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  optionsSuccessStatus: 200 // For legacy browser support
+};
+app.use(cors(corsOptions));
 
 // Sample data
 const books = [
@@ -94,3 +98,4 @@ app.get('/api/books', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
