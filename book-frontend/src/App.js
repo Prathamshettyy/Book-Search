@@ -56,7 +56,11 @@ const glowPulse = keyframes`
   100% { box-shadow: 0 0 10px 2px rgba(187,134,252, 0.3); }
 `;
 
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = process.env.REACT_APP_API_URL;
+if (!API_BASE_URL) {
+  console.error('REACT_APP_API_URL is not defined. Please set it in your .env file.');
+}
+
 
 function App() {
   const [filters, setFilters] = useState({ title: '', author: '', genre: '' });

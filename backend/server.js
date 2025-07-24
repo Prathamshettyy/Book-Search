@@ -1,30 +1,18 @@
+// backend/server.js
+
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const PORT = 5000;
+
+const PORT = process.env.PORT || 5000;
 
 const corsOptions = {
-  origin: function (origin, callback) {
-    const allowedOrigins = [
-      'http://localhost:3000',
-      'https://book-searchdev.netlify.app'
-    ];
-    
-    // Allow requests with no origin (mobile apps, etc.)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  optionsSuccessStatus: 200
+  origin: 'http://localhost:3000',
+  optionsSuccessStatus: 200 // For legacy browser support
 };
 app.use(cors(corsOptions));
 
-// Sample data
+// Sample in-memory data
 const books = [
   { id: 1, title: 'Atomic Habits', author: 'James Clear', genre: 'Self-Help', publicationDate: '2018-10-16' },
   { id: 2, title: '1984', author: 'George Orwell', genre: 'Fiction', publicationDate: '1949-06-08' },
@@ -48,69 +36,64 @@ const books = [
   { id: 20, title: 'Dune', author: 'Frank Herbert', genre: 'Science Fiction', publicationDate: '1965-08-01' }
 ];
 
-
-// Search route with filtering, pagination, sorting
+// GET /api/books — supports filtering, sorting, pagination
 app.get('/api/books', (req, res) => {
-  // FIXED: Changed to camelCase parameters to match frontend
-  let { title, author, genre, page = 1, pageSize = 10, sortBy = 'title', sortOrder = 'asc' } = req.query;
+  let {
+    title = '',
+    author = '',
+    genre = '',
+    page = 1,
+    pageSize = 10,
+    sortBy = 'title',
+    sortOrder = 'asc'
+  } = req.query;
 
-  page = parseInt(page);
-  pageSize = parseInt(pageSize);
-
+  page = parseInt(page, 10);
+  pageSize = parseInt(pageSize, 10);
   if (isNaN(page) || page < 1) page = 1;
   if (isNaN(pageSize) || pageSize < 1) pageSize = 10;
   if (pageSize > 100) pageSize = 100;
 
-  // Allowed sort fields and order
-  const validSortFields = ['title', 'author', 'publicationDate', 'genre'];
-  if (!validSortFields.includes(sortBy)) sortBy = 'title';
-  if (!['asc', 'desc'].includes(sortOrder)) sortOrder = 'asc';
+  // Validate sort parameters
+  const validFields = ['title','author','genre','publicationDate'];
+  if (!validFields.includes(sortBy)) sortBy = 'title';
+  if (!['asc','desc'].includes(sortOrder)) sortOrder = 'asc';
 
-  // Filter books
-  let filteredBooks = books.filter((book) => {
-    return (
-      (!title || book.title.toLowerCase().includes(title.toLowerCase())) &&
-      (!author || book.author.toLowerCase().includes(author.toLowerCase())) &&
-      (!genre || book.genre.toLowerCase().includes(genre.toLowerCase()))
-    );
-  });
+  // Filter
+  let filtered = books.filter(b =>
+    (!title || b.title.toLowerCase().includes(title.toLowerCase())) &&
+    (!author || b.author.toLowerCase().includes(author.toLowerCase())) &&
+    (!genre || b.genre.toLowerCase().includes(genre.toLowerCase()))
+  );
 
-  // FIXED: Improved sorting function
-  filteredBooks.sort((a, b) => {
-    let fieldA = a[sortBy];
-    let fieldB = b[sortBy];
-
-    // Handle dates properly
+  // Sort
+  filtered.sort((a, b) => {
+    let A = a[sortBy], B = b[sortBy];
     if (sortBy === 'publicationDate') {
-      fieldA = new Date(fieldA);
-      fieldB = new Date(fieldB);
-    } else if (typeof fieldA === 'string') {
-      fieldA = fieldA.toLowerCase();
-      fieldB = fieldB.toLowerCase();
+      A = new Date(A); B = new Date(B);
+    } else if (typeof A === 'string') {
+      A = A.toLowerCase(); B = B.toLowerCase();
     }
-
-    if (fieldA < fieldB) return sortOrder === 'asc' ? -1 : 1;
-    if (fieldA > fieldB) return sortOrder === 'asc' ? 1 : -1;
+    if (A < B) return sortOrder === 'asc' ? -1 : 1;
+    if (A > B) return sortOrder === 'asc' ? 1 : -1;
     return 0;
   });
 
-  // Pagination slice
-  const total = filteredBooks.length;
-  const startIndex = (page - 1) * pageSize;
-  const endIndex = startIndex + pageSize;
-  const paginatedBooks = filteredBooks.slice(startIndex, endIndex);
+  // Paginate
+  const total = filtered.length;
+  const start = (page - 1) * pageSize;
+  const end = start + pageSize;
+  const booksPage = filtered.slice(start, end);
 
-  // FIXED: Changed response to match frontend expectations
   res.json({
     total,
     page,
-    pageSize,  // Changed from page_size to pageSize
-    books: paginatedBooks,
+    pageSize,
+    books: booksPage
   });
 });
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server listening on port ${PORT}`);
 });
-
