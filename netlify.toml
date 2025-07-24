@@ -4,7 +4,7 @@
   publish = "build"
 
 [build.environment]
-  REACT_APP_API_URL = https://book-search-5x6s.onrender.com
+  REACT_APP_API_URL = "https://book-search-5x6s.onrender.com"
 
 [[redirects]]
   from = "/*"
