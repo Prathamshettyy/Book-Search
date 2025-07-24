@@ -7,10 +7,11 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 const corsOptions = {
-  origin: 'http://localhost:3000',
-  optionsSuccessStatus: 200 // For legacy browser support
+  origin: ['http://localhost:3000', 'https://booksearchdev.netlify.app'],
+  methods: ['GET'],
 };
 app.use(cors(corsOptions));
+
 
 // Sample in-memory data
 const books = [
