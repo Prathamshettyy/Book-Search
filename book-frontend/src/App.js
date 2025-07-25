@@ -165,7 +165,7 @@ function App() {
               <Grid item xs={12} sm={6} md={3}><TextField fullWidth label="Genre" name="genre" value={filters.genre} onChange={handleFilterChange} variant="outlined" size="small" sx={{ borderRadius: 2 }} /></Grid>
               <Grid item xs={12} sm={6} md={3}><Button fullWidth variant="outlined" onClick={clearFilters} sx={{ borderRadius: 2, textTransform: 'none' }}>Clear Filters</Button></Grid>
             </Grid>
-            <Grid container spacing={2} alignItems="center" sx={{ mt: 1 }}>
+            <Grid container spacing={2} alignItems="center" sx={{ mt: 2 }}>
               <Grid item xs={6}>
                 <FormControl fullWidth size="small">
                   <InputLabel>Sort By</InputLabel>

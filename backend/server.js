@@ -98,3 +98,5 @@ app.get('/api/books', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
+
+module.exports = app;
