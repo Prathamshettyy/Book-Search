@@ -1,6 +1,11 @@
+Here is the **updated `README.md`** that reflects **your exact task (React Developer Task 12)**, without adding anything extra, and includes **your two images (`preview.png` and `test.png`)**.
+
+---
+
+```md
 # 📚 Book Search App
 
-A modern full-stack book search application that enables users to search, filter, sort, and paginate through a list of books with an intuitive interface and robust backend support.
+This project was developed as part of **React Developer Task 12**, which involved implementing search functionality with filters for a Book API in a full-stack application.
 
 Built using **React**, **Material-UI**, **Express.js**, and **Node.js**. Deployed on **Netlify** (Frontend) and **Render** (Backend).
 
@@ -12,121 +17,142 @@ Built using **React**, **Material-UI**, **Express.js**, and **Node.js**. Deploye
 - 🌐 **API**: [https://book-search-5x6s.onrender.com/api/books](https://book-search-5x6s.onrender.com/api/books)
 
 ---
+### 🔹 Preview
+<p align="center">
+  <img src="assets/preview.png" width="70%" />
+</p>
+---
 
-## 🗂️ Task Fulfillment (React Developer Task 12)
+## 📝 React Developer TASK 12 Implementation
 
 ### ✅ Day 1: Backend Setup and Search API Enhancement
-- API accepts filters for **title**, **author**, and **genre** via query parameters.
-- Single `/api/books` endpoint returns search results based on any combination of filters.
 
-### ✅ Day 2: Pagination and Sorting Support
-- Supports `page` and `pageSize` parameters for pagination.
-- Supports sorting via `sortBy` (`title`, `author`, `publicationDate`) and `sortOrder` (`asc`, `desc`).
-- Proper validation & fallback for invalid query values.
-
-### ✅ Day 3: Frontend UI Implementation
-- Search bar with filters for **title**, **author**, and **genre**.
-- Dynamic book card rendering with elegant layout and styling.
-- Responsive design with theme and accessibility.
-
-### ✅ Day 4: Frontend Pagination and Sorting UI
-- User-friendly pagination and page size control.
-- Sorting controls for all supported fields.
-- Displays number of results and current range.
-- Loading spinner during API requests.
-
-### ✅ Day 5: Error Handling and Validation
-- Validates pagination and sort parameters.
-- Fallback to default sort on invalid `sortBy`.
-- Alerts for API failure and empty result sets.
-
-### ✅ Day 6: Testing
-- **Unit tests** implemented using **Jest** and **Supertest**.
-- Backend `/api/books` endpoint tested for:
-  - All-books fetch
-  - Filtering by title
-  - Pagination accuracy
-  - Sorting correctness
-  - Invalid `sortBy` fallback behavior
-- All test cases **passed successfully**.
-
-### ✅ Day 7: Documentation and Deployment
-- This README includes full **documentation** of filters, sorting, and pagination behavior.
-- Frontend and backend deployed on **Netlify** and **Render** respectively.
+- Enhanced the API to accept query parameters for:
+  - `title`
+  - `author`
+  - `genre`
+- `/api/books` endpoint implemented to return filtered search results.
 
 ---
 
-## ✨ Features
+### ✅ Day 2: Pagination and Sorting Support
 
-### 🔎 Search & Filters
-- Search by **title**, **author**, and **genre**
-- Real-time filtering with input fields
+- Supports `page` and `pageSize` parameters to paginate results.
+- Sorting implemented using:
+  - `sortBy` → `title`, `author`, `publicationDate`
+  - `sortOrder` → `asc`, `desc`
+- Validations and default fallback for invalid inputs are handled properly.
 
-### 📊 Pagination & Sorting
-- Change **page number** and **page size** (8/12/20/50)
-- Sort by **title**, **author**, or **publication date**
-- Ascending/descending order toggle
+---
 
-### 🎨 Modern UI (MUI + Custom Styling)
-- Dark theme with glowing effect
-- Responsive layout
-- Tooltip on book titles
-- Card hover effects
+### ✅ Day 3: Frontend UI Implementation
 
-### ⚙️ Error Handling & Edge Cases
-- Shows meaningful messages if API fails
-- Displays graceful message if no books found
-- Handles invalid sort input safely
+- UI includes filters for **title**, **author**, and **genre**.
+- Dynamically displays books using responsive card layout.
+- Uses Material UI for styling and layout.
+
+---
+
+### ✅ Day 4: Frontend Pagination and Sorting UI
+
+- UI controls for:
+  - Pagination (Next, Prev, specific page)
+  - Items per page (8, 12, 20, 50)
+  - Sorting field and order
+- Displays results count and current range.
+- Shows loading spinner during API calls.
+
+---
+
+### ✅ Day 5: Error Handling and Validation
+
+- Backend validates invalid query values and falls back gracefully.
+- Frontend displays alerts for:
+  - Empty search results
+  - Backend/API failure
+  - Invalid filters
+
+---
+
+### ✅ Day 6: Testing
+
+- **Unit Tests** written using **Jest** and **Supertest**:
+  - ✅ Fetch all books
+  - ✅ Filter by title
+  - ✅ Paginate correctly
+  - ✅ Sort by author (descending)
+  - ✅ Handle invalid `sortBy` with fallback
+- All test cases passed successfully.
+
+---
+
+### ✅ Day 7: Documentation and Deployment
+
+- Detailed `README.md` created.
+- Frontend deployed on **Netlify** with `.env.production`.
+- Backend deployed on **Render** using `server.js`.
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Frontend        | Backend        |
-|----------------|----------------|
-| React (Vite)    | Express.js     |
-| Material-UI    | Node.js        |
-| Axios          | CORS           |
-| Framer Motion  | Jest + Supertest |
+| Frontend        | Backend        | Testing       |
+|----------------|----------------|---------------|
+| React (Vite)    | Express.js     | Jest          |
+| Material-UI    | Node.js        | Supertest     |
+| Axios          | CORS           |               |
 
 ---
 
 ## 📁 Folder Structure
+
 ```
+
 Book-Search/
 ├── backend/            # Express server with API
-│   ├── server.js       # API code
-│   └── tests/          # Unit tests (Jest)
-├── book-frontend/      # React + Vite frontend
-│   ├── App.js          # Main UI logic
-│   └── .env.production # Contains API URL
-```
+│   ├── server.js       # API and filtering logic
+│   ├── tests/          # Unit tests using Jest
+├── book-frontend/      # React + MUI frontend
+│   ├── App.js          # UI logic and layout
+│   ├── .env.production # API base URL
+├── assets/             # README screenshots
+│   ├── preview\.png
+│   └── test.png
+
+````
 
 ---
 
-## 📦 Install & Run Locally
+## ⚙️ Local Setup
 
-### 1️⃣ Clone the Repo
+### 🔧 Clone & Install
+
 ```bash
 git clone https://github.com/Prathamshettyy/Book-Search.git
 cd Book-Search
-```
+````
 
-### 2️⃣ Backend Setup
+### ▶️ Start Backend
+
 ```bash
 cd backend
 npm install
 npm start
 ```
 
-### 3️⃣ Frontend Setup
+### ▶️ Start Frontend
+
 ```bash
-cd ../book-frontend
+cd book-frontend
 npm install
 npm run dev
 ```
 
-> ⚠️ Ensure you have `.env` with: `REACT_APP_API_URL=http://localhost:5000`
+> 🔑 Add `.env` in `book-frontend`:
+
+```env
+REACT_APP_API_URL=http://localhost:5000
+```
 
 ---
 
@@ -137,40 +163,52 @@ cd backend
 npm test
 ```
 
-**Unit Testing (Jest + Supertest):**
-- API endpoint `/api/books` tested for:
-  - ✅ Returning all books
-  - ✅ Filtering by title
-  - ✅ Correct pagination behavior
-  - ✅ Sorting by author in descending order
-  - ✅ Handling of invalid sort parameters (fallback to default sort)
-- Tests confirm the API behaves correctly in normal and edge cases
+### 📌 What is Tested?
 
-> ✔️ All tests passed successfully
+* Returns all books (default)
+* Filters books by title
+* Paginates correctly
+* Sorts by author in descending order
+* Handles invalid `sortBy` without crashing
 
----
+> ✔️ All unit tests passed
 
-## 📄 Deployment
-
-### Frontend
-- Hosted on **Netlify**
-- `.env.production` sets: `REACT_APP_API_URL=https://book-search-5x6s.onrender.com`
-- `netlify.toml` handles redirects and build setup
-
-### Backend
-- Hosted on **Render**
-- Free web service using `server.js` and sample book data
+### 🔹 Unit Test Output
+<p align="center">
+  <img src="assets/test.png" width="70%" />
+</p>
 
 ---
 
-## 📌 Author
+## 📄 Deployment Summary
 
-**Pratham Shetty**  
+### ✅ Frontend (Netlify)
+
+* Deployed to: [booksearchdev.netlify.app](https://booksearchdev.netlify.app)
+* `.env.production` sets API URL to Render backend
+* `netlify.toml` configures build and redirects
+
+### ✅ Backend (Render)
+
+* Deployed to: [book-search-5x6s.onrender.com](https://book-search-5x6s.onrender.com)
+* Uses in-memory book data from `server.js`
+
+---
+
+## 👨‍💻 Author
+
+**Pratham Shetty**
 GitHub: [@Prathamshettyy](https://github.com/Prathamshettyy)
 
 ---
 
-## ✅ Status
-> **Complete** – All features implemented, tested, and deployed.
+## ✅ Project Status
+
+**Completed** – All requirements from **React Developer Task 12** have been implemented, tested, and deployed.
+
+```
 
 ---
+
+Let me know if you'd like this file uploaded, or want me to commit it directly into your repo with the image paths ready.
+```
