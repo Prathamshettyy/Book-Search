@@ -1,8 +1,3 @@
-Here is the **updated `README.md`** that reflects **your exact task (React Developer Task 12)**, without adding anything extra, and includes **your two images (`preview.png` and `test.png`)**.
-
----
-
-```md
 # 📚 Book Search App
 
 This project was developed as part of **React Developer Task 12**, which involved implementing search functionality with filters for a Book API in a full-stack application.
@@ -21,6 +16,7 @@ Built using **React**, **Material-UI**, **Express.js**, and **Node.js**. Deploye
 <p align="center">
   <img src="assets/preview.png" width="70%" />
 </p>
+
 ---
 
 ## 📝 React Developer TASK 12 Implementation
@@ -206,9 +202,3 @@ GitHub: [@Prathamshettyy](https://github.com/Prathamshettyy)
 
 **Completed** – All requirements from **React Developer Task 12** have been implemented, tested, and deployed.
 
-```
-
----
-
-Let me know if you'd like this file uploaded, or want me to commit it directly into your repo with the image paths ready.
-```
