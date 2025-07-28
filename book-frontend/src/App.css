@@ -145,6 +145,8 @@ h3 {
   padding: 20px;
   background: #f9f9f9;
   transition: transform 0.2s, box-shadow 0.2s;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .book-card:hover {
@@ -161,6 +163,12 @@ h3 {
 .book-card p {
   margin: 8px 0;
   color: #555;
+}
+.book-card h4,
+.book-card p {
+  overflow-wrap: break-word; 
+  word-break: break-word;    
+  white-space: normal;       
 }
 
 .book-card strong {
@@ -244,4 +252,11 @@ h3 {
   .books-grid {
     grid-template-columns: 1fr;
   }
+}
+
+.books-grid .book-card .MuiTypography-h4,
+.books-grid .book-card .MuiTypography-body2 {
+  overflow-wrap: break-word !important;
+  word-break: break-word !important;
+  white-space: normal !important;
 }

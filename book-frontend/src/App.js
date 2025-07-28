@@ -61,7 +61,6 @@ if (!API_BASE_URL) {
   console.error('REACT_APP_API_URL is not defined. Please set it in your .env file.');
 }
 
-
 function App() {
   const [filters, setFilters] = useState({ title: '', author: '', genre: '' });
   const [sort, setSort] = useState({ sortBy: 'title', sortOrder: 'asc' });
@@ -160,10 +159,18 @@ function App() {
         <Container sx={{ py: { xs: 2, sm: 4 }, px: { xs: 2, sm: 4 } }}>
           <Paper elevation={0} sx={{ p: 3, mb: 4, borderRadius: 4, background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.1)' }}>
             <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} sm={6} md={3}><TextField fullWidth label="Title" name="title" value={filters.title} onChange={handleFilterChange} variant="outlined" size="small" sx={{ borderRadius: 2 }} /></Grid>
-              <Grid item xs={12} sm={6} md={3}><TextField fullWidth label="Author" name="author" value={filters.author} onChange={handleFilterChange} variant="outlined" size="small" sx={{ borderRadius: 2 }} /></Grid>
-              <Grid item xs={12} sm={6} md={3}><TextField fullWidth label="Genre" name="genre" value={filters.genre} onChange={handleFilterChange} variant="outlined" size="small" sx={{ borderRadius: 2 }} /></Grid>
-              <Grid item xs={12} sm={6} md={3}><Button fullWidth variant="outlined" onClick={clearFilters} sx={{ borderRadius: 2, textTransform: 'none' }}>Clear Filters</Button></Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <TextField fullWidth label="Title" name="title" value={filters.title} onChange={handleFilterChange} variant="outlined" size="small" sx={{ borderRadius: 2 }} />
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <TextField fullWidth label="Author" name="author" value={filters.author} onChange={handleFilterChange} variant="outlined" size="small" sx={{ borderRadius: 2 }} />
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <TextField fullWidth label="Genre" name="genre" value={filters.genre} onChange={handleFilterChange} variant="outlined" size="small" sx={{ borderRadius: 2 }} />
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Button fullWidth variant="outlined" onClick={clearFilters} sx={{ borderRadius: 2, textTransform: 'none' }}>Clear Filters</Button>
+              </Grid>
             </Grid>
             <Grid container spacing={2} alignItems="center" sx={{ mt: 2 }}>
               <Grid item xs={6}>
@@ -203,58 +210,98 @@ function App() {
             <Alert severity="error" variant="filled">{error}</Alert>
           ) : (
             <>
-              <Grid container spacing={3} justifyContent="center">
+              <Grid container spacing={3} justifyContent="center" alignItems="stretch">
                 {books.length > 0 ? books.map((book) => (
-                  <Grid item key={book.id}>
-                    <Box sx={{ width: 240, height: 140 }}>
-                      <Card
-                        sx={{
-                          width: '100%',
-                          height: '100%',
-                          backdropFilter: 'blur(6px)',
-                          backgroundColor: 'rgba(30, 30, 30, 0.7)',
-                          border: '1px solid rgba(255, 255, 255, 0.1)',
-                          boxShadow: '0 8px 20px -8px rgba(187, 134, 252, 0.4)',
-                          borderRadius: 4,
-                          p: 2,
-                          transition: 'all 0.3s ease-in-out',
-                          '&:hover': {
-                            transform: 'translateY(-6px)',
-                            boxShadow: '0 12px 30px -8px rgba(187, 134, 252, 0.6)'
-                          }
-                        }}
-                      >
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                          <Tooltip title={book.title} arrow placement="top">
-                            <Typography
-                              variant="h6"
-                              component="div"
-                              sx={{
-                                fontWeight: 600,
-                                fontSize: '1rem',
-                                color: 'primary.main',
-                                lineHeight: 1.3,
-                                overflow: 'hidden',
-                                display: '-webkit-box',
-                                WebkitBoxOrient: 'vertical',
-                                WebkitLineClamp: 2,
-                                cursor: 'default',
-                                transition: 'all 0.2s ease-in-out',
-                                '&:hover': {
-                                  textDecoration: 'underline',
-                                  color: 'primary.light'
-                                }
-                              }}
-                            >
-                              {book.title}
-                            </Typography>
-                          </Tooltip>
-                          <Typography variant="body2" color="text.secondary"><strong>Author:</strong> {book.author}</Typography>
-                          <Typography variant="body2" color="text.secondary"><strong>Genre:</strong> {book.genre}</Typography>
-                          <Typography variant="body2" color="text.secondary"><strong>Published:</strong> {new Date(book.publicationDate).toLocaleDateString()}</Typography>
-                        </Box>
-                      </Card>
-                    </Box>
+                  <Grid item key={book.id} display="flex" xs={12} sm="auto">
+                    <Card
+                      sx={{
+                        width: 240,
+                        flexGrow: 1,
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        p: 2,
+                        backdropFilter: 'blur(6px)',
+                        backgroundColor: 'rgba(30, 30, 30, 0.7)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        boxShadow: '0 8px 20px -8px rgba(187, 134, 252, 0.4)',
+                        borderRadius: 4,
+                        transition: 'all 0.3s ease-in-out',
+                        '&:hover': {
+                          transform: 'translateY(-6px)',
+                          boxShadow: '0 12px 30px -8px rgba(187, 134, 252, 0.6)'
+                        }
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                        <Tooltip title={book.title} arrow placement="top">
+                          <Typography
+                            variant="h6"
+                            component="div"
+                            sx={{
+                              fontWeight: 600,
+                              fontSize: '1rem',
+                              color: 'primary.main',
+                              lineHeight: 1.3,
+                              overflow: 'hidden',
+                              display: '-webkit-box',
+                              WebkitBoxOrient: 'vertical',
+                              WebkitLineClamp: 1,
+                              cursor: 'default',
+                              transition: 'all 0.2s ease-in-out',
+                              '&:hover': {
+                                textDecoration: 'underline',
+                                color: 'primary.light'
+                              }
+                            }}
+                          >
+                            {book.title}
+                          </Typography>
+                        </Tooltip>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{
+                            overflow: 'hidden',
+                            display: '-webkit-box',
+                            WebkitBoxOrient: 'vertical',
+                            WebkitLineClamp: 1,
+                            wordBreak: 'break-word',
+                            whiteSpace: 'normal',
+                          }}
+                        >
+                          <strong>Author:</strong> {book.author}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{
+                            overflow: 'hidden',
+                            display: '-webkit-box',
+                            WebkitBoxOrient: 'vertical',
+                            WebkitLineClamp: 1,
+                            wordBreak: 'break-word',
+                            whiteSpace: 'normal',
+                          }}
+                        >
+                          <strong>Genre:</strong> {book.genre}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{
+                            overflow: 'hidden',
+                            display: '-webkit-box',
+                            WebkitBoxOrient: 'vertical',
+                            WebkitLineClamp: 1,
+                            wordBreak: 'break-word',
+                            whiteSpace: 'normal',
+                          }}
+                        >
+                          <strong>Published:</strong> {new Date(book.publicationDate).toLocaleDateString()}
+                        </Typography>
+                      </Box>
+                    </Card>
                   </Grid>
                 )) : (
                   <Grid item xs={12}>
