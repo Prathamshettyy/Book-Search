@@ -94,7 +94,7 @@ Built using **React**, **Material-UI**, **Express.js**, and **Node.js**. Deploye
 
 | Frontend        | Backend        | Testing       |
 |----------------|----------------|---------------|
-| React (Vite)    | Express.js     | Jest          |
+| React          | Express.js     | Jest          |
 | Material-UI    | Node.js        | Supertest     |
 | Axios          | CORS           |               |
 
